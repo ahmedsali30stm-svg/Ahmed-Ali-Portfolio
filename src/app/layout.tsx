@@ -57,11 +57,11 @@ export const metadata: Metadata = {
       "Portfolio of Ahmed Ali, specializing in AI-powered automation, digital ecosystems, and immersive 3D web experiences.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.svg",
         width: 1200,
         height: 630,
         alt: "Ahmed Ali — Full-Stack Developer & Systems Architect",
-        type: "image/png",
+        type: "image/svg+xml",
       },
     ],
   },
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     title: "Ahmed Ali | Full-Stack Developer & Systems Architect",
     description:
       "Portfolio of Ahmed Ali, specializing in AI-powered automation, digital ecosystems, and immersive 3D web experiences.",
-    images: ["/og-image.png"],
+    images: ["/og-image.svg"],
     creator: "@ahmedsali30stm",
   },
   robots: {
@@ -99,7 +99,7 @@ const jsonLd = {
   jobTitle:
     "Full-Stack Developer | Systems Architect | AI Automation Specialist",
   url: SITE_URL,
-  image: `${SITE_URL}/og-image.png`,
+  image: `${SITE_URL}/og-image.svg`,
   description:
     "Portfolio of Ahmed Ali, specializing in AI-powered automation, digital ecosystems, and immersive 3D web experiences. Founder of Etlaala Travel & Tourism.",
   sameAs: [

@@ -40,7 +40,7 @@ export function TechStackSection() {
   const prefersReduced = useReducedMotion();
 
   return (
-    <section className="relative py-32 px-6 z-10">
+    <section id="techstack" className="relative py-32 px-6 z-10">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={prefersReduced ? {} : { opacity: 0, x: -30 }}

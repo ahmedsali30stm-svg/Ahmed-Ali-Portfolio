@@ -15,7 +15,7 @@ export function StatsSection() {
   const gridRef = useGsapReveal({ y: 30, duration: 0.8 });
 
   return (
-    <section className="relative py-24 px-6 z-10">
+    <section id="stats" className="relative py-24 px-6 z-10">
       <div className="max-w-6xl mx-auto" ref={gridRef}>
         <div ref={counterRef} className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat, i) => (
