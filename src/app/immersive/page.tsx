@@ -8,6 +8,10 @@ const EngineCanvas = dynamic(
   () => import("@/engine").then((m) => m.EngineCanvas),
   { ssr: false }
 );
+const CinematicLoader = dynamic(
+  () => import("@/engine/ui/CinematicLoader").then((m) => m.CinematicLoader),
+  { ssr: false }
+);
 
 /**
  * Immersive V2 — PROJECT SOVEREIGN
@@ -19,6 +23,9 @@ export default function ImmersivePage() {
   return (
     <EngineProvider>
       <main className="relative w-screen h-screen overflow-hidden bg-[#050508]">
+        {/* Cinematic entry loader */}
+        <CinematicLoader />
+
         {/* 3D Engine Canvas */}
         <EngineCanvas />
 
