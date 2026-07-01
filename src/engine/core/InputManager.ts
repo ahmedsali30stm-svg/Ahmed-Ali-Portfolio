@@ -5,7 +5,7 @@ import type { ExperienceEngine } from "./Engine";
  * Abstracts pointer, keyboard, and touch input into a unified interface.
  *
  * Provides normalized pointer position (-1 to 1), scroll delta,
- * and key states for the engine.
+ * key states, reduced motion detection, and mobile detection.
  */
 export class InputManager {
   private engine: ExperienceEngine;
@@ -13,6 +13,8 @@ export class InputManager {
   private _scroll = 0;
   private _keys = new Set<string>();
   private _touchDevice = false;
+  private _reducedMotion = false;
+  private _mobile = false;
   private _running = false;
 
   // Bound handlers
@@ -21,11 +23,18 @@ export class InputManager {
   private onKeyDown = this.handleKeyDown.bind(this);
   private onKeyUp = this.handleKeyUp.bind(this);
   private onTouchStart = this.handleTouchStart.bind(this);
+  private onReducedMotionChange = this.handleReducedMotionChange.bind(this);
 
   constructor(engine: ExperienceEngine) {
     this.engine = engine;
     if (typeof window !== "undefined") {
       this._touchDevice = "ontouchstart" in window;
+      this._mobile = /Android|iPhone|iPad|iPod|Opera Mini/i.test(
+        navigator.userAgent
+      );
+      this._reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
     }
   }
 
@@ -39,6 +48,14 @@ export class InputManager {
 
   get touchDevice(): boolean {
     return this._touchDevice;
+  }
+
+  get mobile(): boolean {
+    return this._mobile;
+  }
+
+  get reducedMotion(): boolean {
+    return this._reducedMotion;
   }
 
   isKeyDown(key: string): boolean {
@@ -59,6 +76,10 @@ export class InputManager {
     window.addEventListener("touchstart", this.onTouchStart, {
       passive: true,
     });
+
+    // Listen for reduced motion changes
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    mq.addEventListener("change", this.onReducedMotionChange);
   }
 
   stop() {
@@ -70,11 +91,13 @@ export class InputManager {
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("keyup", this.onKeyUp);
     window.removeEventListener("touchstart", this.onTouchStart);
+
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    mq.removeEventListener("change", this.onReducedMotionChange);
   }
 
   // ─── Handlers ────────────────────────────────────────────
   private handlePointerMove(e: PointerEvent) {
-    // Normalize to -1..1
     this._pointer.set(
       (e.clientX / window.innerWidth) * 2 - 1,
       -(e.clientY / window.innerHeight) * 2 + 1
@@ -85,7 +108,6 @@ export class InputManager {
   private handleWheel(e: WheelEvent) {
     this._scroll = e.deltaY;
     this.engine.emit({ type: "input:scroll", delta: e.deltaY });
-    // Decay scroll
     setTimeout(() => {
       this._scroll = 0;
     }, 100);
@@ -101,6 +123,10 @@ export class InputManager {
 
   private handleTouchStart() {
     this._touchDevice = true;
+  }
+
+  private handleReducedMotionChange(e: MediaQueryListEvent) {
+    this._reducedMotion = e.matches;
   }
 
   // ─── Cleanup ─────────────────────────────────────────────

@@ -148,16 +148,27 @@ export class PerformanceManager {
   static detectQuality(): QualityLevel {
     if (typeof window === "undefined") return "high";
 
+    // Mobile: cap at medium
+    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
     const gl = document.createElement("canvas").getContext("webgl2");
     if (!gl) return "low";
 
     const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-    if (!debugInfo) return "medium";
+    if (!debugInfo) return isMobile ? "low" : "medium";
 
     const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
     const lower = renderer.toLowerCase();
 
-    // Simple heuristic
+    if (isMobile) {
+      if (lower.includes("apple") || lower.includes("adreno 7")) {
+        return "medium";
+      }
+      return "low";
+    }
+
     if (
       lower.includes("rtx") ||
       lower.includes("radeon rx 6") ||
