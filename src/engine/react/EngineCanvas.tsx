@@ -1,11 +1,22 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import {
+  EffectComposer,
+  Bloom,
+  ChromaticAberration,
+  Vignette,
+} from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
 import { Suspense, useEffect } from "react";
 import { useEngineContext } from "./EngineProvider";
 import { UniverseScene } from "../scenes/UniverseScene";
 import { FloatingWorld } from "../scenes/FloatingWorld";
+import { TravelOSWorld } from "../scenes/TravelOSWorld";
+import { AIAgentsWorld } from "../scenes/AIAgentsWorld";
+import { ProjectsWorld } from "../scenes/ProjectsWorld";
+import { TimelineWorld } from "../scenes/TimelineWorld";
+import { CommandCenterWorld } from "../scenes/CommandCenterWorld";
 import type { SceneID } from "../types";
 
 const WORLD_NODES: {
@@ -42,27 +53,70 @@ function PointerTracker() {
   return null;
 }
 
+function ActiveWorld() {
+  const { currentScene, engine } = useEngineContext();
+  const { camera } = useThree();
+
+  // Initialize camera on mount
+  useEffect(() => {
+    engine.camera.init(camera as never);
+  }, [camera, engine]);
+
+  switch (currentScene) {
+    case "travel-os":
+      return <TravelOSWorld />;
+    case "ai-agents":
+      return <AIAgentsWorld />;
+    case "projects":
+      return <ProjectsWorld />;
+    case "timeline":
+      return <TimelineWorld />;
+    case "command-center":
+      return <CommandCenterWorld />;
+    default:
+      return null;
+  }
+}
+
 function SceneContent() {
-  const { navigateTo } = useEngineContext();
+  const { currentScene, navigateTo } = useEngineContext();
+  const isUniverse = currentScene === "universe";
 
   return (
     <>
       <UniverseScene />
-      {WORLD_NODES.map((world) => (
-        <FloatingWorld
-          key={world.id}
-          position={world.position}
-          color={world.color}
-          label={world.label}
-          onClick={() => navigateTo(world.id)}
-        />
-      ))}
-      <EffectComposer>
+
+      {/* Show floating world nodes only in universe view */}
+      {isUniverse &&
+        WORLD_NODES.map((world) => (
+          <FloatingWorld
+            key={world.id}
+            position={world.position}
+            color={world.color}
+            label={world.label}
+            onClick={() => navigateTo(world.id)}
+          />
+        ))}
+
+      {/* Show active world scene */}
+      <ActiveWorld />
+
+      {/* Post-processing pipeline */}
+      <EffectComposer multisampling={0}>
         <Bloom
           intensity={0.6}
           luminanceThreshold={0.15}
           luminanceSmoothing={0.9}
           mipmapBlur
+        />
+        <ChromaticAberration
+          blendFunction={BlendFunction.NORMAL}
+          offset={[0.0005, 0.0005]}
+        />
+        <Vignette
+          offset={0.3}
+          darkness={0.7}
+          blendFunction={BlendFunction.NORMAL}
         />
       </EffectComposer>
     </>
