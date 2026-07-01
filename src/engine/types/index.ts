@@ -7,7 +7,9 @@ export type SceneID =
   | "ai-agents"
   | "projects"
   | "timeline"
-  | "command-center";
+  | "command-center"
+  | "contact"
+  | "skills";
 
 export type SceneState = "idle" | "loading" | "ready" | "active" | "exiting" | "error";
 

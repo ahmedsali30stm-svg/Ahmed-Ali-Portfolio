@@ -18,6 +18,8 @@ import { AIAgentsWorld } from "../scenes/AIAgentsWorld";
 import { ProjectsWorld } from "../scenes/ProjectsWorld";
 import { TimelineWorld } from "../scenes/TimelineWorld";
 import { CommandCenterWorld } from "../scenes/CommandCenterWorld";
+import { ContactWorld } from "../scenes/ContactWorld";
+import { SkillsWorld } from "../scenes/SkillsWorld";
 import type { SceneID } from "../types";
 
 const WORLD_NODES: {
@@ -31,6 +33,8 @@ const WORLD_NODES: {
   { id: "projects", position: [2, -2, -1], color: "#d4af37", label: "Projects" },
   { id: "timeline", position: [-2.5, -1.5, 0.5], color: "#c0c0c0", label: "Timeline" },
   { id: "command-center", position: [0, 3, -2], color: "#d4af37", label: "Command Center" },
+  { id: "contact", position: [-3.5, -1, 0.5], color: "#c0c0c0", label: "Contact" },
+  { id: "skills", position: [3, -2.5, 1], color: "#d4af37", label: "Skills" },
 ];
 
 function EngineTicker() {
@@ -77,6 +81,10 @@ function ActiveWorld() {
       return <TimelineWorld />;
     case "command-center":
       return <CommandCenterWorld />;
+    case "contact":
+      return <ContactWorld />;
+    case "skills":
+      return <SkillsWorld />;
     default:
       return null;
   }

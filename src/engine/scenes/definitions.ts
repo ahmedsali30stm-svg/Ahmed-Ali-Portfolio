@@ -66,4 +66,24 @@ export const SCENES: SceneDefinition[] = [
       fov: 40,
     },
   },
+  {
+    id: "contact",
+    label: "Contact",
+    description: "Communication hub — email, LinkedIn, GitHub, location.",
+    camera: {
+      position: new THREE.Vector3(0, 1, 5),
+      target: new THREE.Vector3(0, 0, 0),
+      fov: 50,
+    },
+  },
+  {
+    id: "skills",
+    label: "Skills",
+    description: "Skill constellation — frontend, backend, AI/ML, DevOps.",
+    camera: {
+      position: new THREE.Vector3(0, 0, 6),
+      target: new THREE.Vector3(0, 0, 0),
+      fov: 50,
+    },
+  },
 ];

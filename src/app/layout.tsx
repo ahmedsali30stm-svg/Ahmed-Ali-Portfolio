@@ -163,6 +163,11 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <script
+          defer
+          data-domain="ahmedsali30stm-svg.github.io"
+          src="https://plausible.io/js/script.js"
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
