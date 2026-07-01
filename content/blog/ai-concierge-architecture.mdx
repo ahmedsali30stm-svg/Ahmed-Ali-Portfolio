@@ -1,0 +1,32 @@
+---
+title: "Designing an AI Concierge for Luxury Travel"
+description: "Architecture patterns for building context-aware, multilingual AI assistants in the travel domain."
+date: "2026-06-15"
+tags: ["AI", "Architecture", "Travel UX"]
+---
+
+## Beyond Chatbots
+
+A concierge isn't a chatbot. It remembers preferences, anticipates needs, and operates across languages and cultural contexts. Building one requires more than an LLM wrapper.
+
+## Architecture
+
+Our AI concierge stack:
+
+1. **RAG Layer** — retrieves guest history, preferences, and contextual data
+2. **Multi-Agent Router** — delegates to specialized agents (booking, dining, experiences)
+3. **Memory System** — tracks conversation context and guest preferences across sessions
+4. **Multilingual Pipeline** — Arabic, English, with cultural context awareness
+5. **Human Escalation** — seamless handoff to human staff for complex requests
+
+## Key Decisions
+
+- **Vector DB for memory** — semantic search over guest history beats keyword matching
+- **Agent specialization** — one agent per domain beats a single generalist
+- **Confidence routing** — low-confidence responses trigger human review automatically
+
+## Impact
+
+- 98% client satisfaction score
+- 80%+ autonomous resolution
+- Response time: < 2 seconds for 90% of queries
