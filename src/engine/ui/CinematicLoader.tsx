@@ -14,7 +14,7 @@ import { useEngineEvent } from "../react";
  */
 export function CinematicLoader() {
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState<"loading" | "ready" | "exiting">("loading");
+  const [phase, setPhase] = useState<"loading" | "ready" | "exiting" | "done">("loading");
   const [textReveal, setTextReveal] = useState("");
 
   const fullText = "PROJECT SOVEREIGN";
@@ -61,9 +61,18 @@ export function CinematicLoader() {
 
   useEngineEvent("camera:transition:complete", handleTransitionComplete);
 
+  // Auto-dismiss exiting phase after fade
+  useEffect(() => {
+    if (phase !== "exiting") return;
+    const timer = setTimeout(() => setPhase("done"), 1200);
+    return () => clearTimeout(timer);
+  }, [phase]);
+
+  if (phase === "done") return null;
+
   if (phase === "exiting") {
     return (
-      <div className="fixed inset-0 z-[100] bg-[#050508] animate-fadeOut pointer-events-none" />
+      <div className="fixed inset-0 z-[100] bg-[#050508] pointer-events-none animate-[fadeOut_1s_ease-out_forwards]" />
     );
   }
 
