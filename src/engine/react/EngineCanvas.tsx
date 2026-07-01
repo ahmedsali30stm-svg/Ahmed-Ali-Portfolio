@@ -1,0 +1,152 @@
+"use client";
+
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import {
+  EffectComposer,
+  Bloom,
+  ChromaticAberration,
+  Vignette,
+} from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
+import { Suspense, useEffect } from "react";
+import { useEngineContext } from "./EngineProvider";
+import { useIsMobile } from "./useReducedMotion";
+import { UniverseScene } from "../scenes/UniverseScene";
+import { FloatingWorld } from "../scenes/FloatingWorld";
+import { TravelOSWorld } from "../scenes/TravelOSWorld";
+import { AIAgentsWorld } from "../scenes/AIAgentsWorld";
+import { ProjectsWorld } from "../scenes/ProjectsWorld";
+import { TimelineWorld } from "../scenes/TimelineWorld";
+import { CommandCenterWorld } from "../scenes/CommandCenterWorld";
+import type { SceneID } from "../types";
+
+const WORLD_NODES: {
+  id: SceneID;
+  position: [number, number, number];
+  color: string;
+  label: string;
+}[] = [
+  { id: "travel-os", position: [3.5, 1, 0], color: "#d4af37", label: "Travel OS" },
+  { id: "ai-agents", position: [-3, 2, 1], color: "#c0c0c0", label: "AI Agents" },
+  { id: "projects", position: [2, -2, -1], color: "#d4af37", label: "Projects" },
+  { id: "timeline", position: [-2.5, -1.5, 0.5], color: "#c0c0c0", label: "Timeline" },
+  { id: "command-center", position: [0, 3, -2], color: "#d4af37", label: "Command Center" },
+];
+
+function EngineTicker() {
+  const { engine } = useEngineContext();
+
+  useFrame((state, delta) => {
+    engine.tick(delta, state.clock.elapsedTime);
+  });
+
+  return null;
+}
+
+function PointerTracker() {
+  const { engine } = useEngineContext();
+  const { pointer } = useThree();
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    // Disable parallax on mobile for performance
+    if (!isMobile) {
+      engine.camera.setPointer(pointer.x, pointer.y);
+    }
+  }, [pointer.x, pointer.y, engine, isMobile]);
+
+  return null;
+}
+
+function ActiveWorld() {
+  const { currentScene, engine } = useEngineContext();
+  const { camera } = useThree();
+
+  useEffect(() => {
+    engine.camera.init(camera as never);
+  }, [camera, engine]);
+
+  switch (currentScene) {
+    case "travel-os":
+      return <TravelOSWorld />;
+    case "ai-agents":
+      return <AIAgentsWorld />;
+    case "projects":
+      return <ProjectsWorld />;
+    case "timeline":
+      return <TimelineWorld />;
+    case "command-center":
+      return <CommandCenterWorld />;
+    default:
+      return null;
+  }
+}
+
+function SceneContent() {
+  const { currentScene, navigateTo } = useEngineContext();
+  const isUniverse = currentScene === "universe";
+  const isMobile = useIsMobile();
+
+  return (
+    <>
+      <UniverseScene />
+
+      {isUniverse &&
+        WORLD_NODES.map((world) => (
+          <FloatingWorld
+            key={world.id}
+            position={world.position}
+            color={world.color}
+            label={world.label}
+            onClick={() => navigateTo(world.id)}
+          />
+        ))}
+
+      <ActiveWorld />
+
+      {/* Post-processing: skip ChromaticAberration on mobile */}
+      <EffectComposer multisampling={0}>
+        <Bloom
+          intensity={isMobile ? 0.4 : 0.6}
+          luminanceThreshold={0.15}
+          luminanceSmoothing={0.9}
+          mipmapBlur
+        />
+        <ChromaticAberration
+          blendFunction={BlendFunction.NORMAL}
+          offset={isMobile ? [0, 0] : [0.0005, 0.0005]}
+        />
+        <Vignette
+          offset={0.3}
+          darkness={isMobile ? 0.5 : 0.7}
+          blendFunction={BlendFunction.NORMAL}
+        />
+      </EffectComposer>
+    </>
+  );
+}
+
+export function EngineCanvas() {
+  const isMobile = useIsMobile();
+
+  return (
+    <div className="absolute inset-0 z-0">
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 50 }}
+        dpr={isMobile ? [1, 1] : [1, 1.5]}
+        gl={{
+          antialias: !isMobile,
+          alpha: false,
+          powerPreference: "high-performance",
+        }}
+        frameloop={isMobile ? "demand" : "always"}
+      >
+        <Suspense fallback={null}>
+          <EngineTicker />
+          <PointerTracker />
+          <SceneContent />
+        </Suspense>
+      </Canvas>
+    </div>
+  );
+}
