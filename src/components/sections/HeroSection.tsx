@@ -107,6 +107,15 @@ export function HeroSection() {
           >
             View Projects
           </a>
+          <a
+            href="/Ahmed-Ali-Portfolio/immersive"
+            className="group px-8 py-4 rounded-xl text-sm font-medium tracking-wider uppercase
+                       border border-gold/30 text-gold/70
+                       hover:border-gold/60 hover:text-gold hover:shadow-[0_0_20px_rgba(212,175,55,0.15)]
+                       transition-all duration-500"
+          >
+            Enter the Universe
+          </a>
         </motion.div>
       </div>
 
